@@ -36,13 +36,15 @@ Then install neccesary packages to run the scripts
 ```
 
 ## Run Tests:
+```
 (VIRTUALENVNAME) truman@laptop ~/bookscraper-main ~ $ pytests tests.py 
 collected 2 items                                                              
 
 tests.py ..                                                              [100%]
 ============= 2 passed in 0.19s =============
-
+```
 ## Example use:
+```
 (VIRTUALENVNAME) truman@laptop ~/bookscraper-main ~ $ python bookscraper.py
 Row appended: 1
 Row appended: 2
@@ -50,7 +52,7 @@ Row appended: 3
 ...
 Row appended: 1000
 Done scraping
-
+```
 Sources:
 - https://www.digitalocean.com/community/tutorials/how-to-work-with-web-data-using-requests-and-beautiful-soup-with-python-3
 - https://www.programiz.com/python-programming/datetime/current-time
