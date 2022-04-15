@@ -40,7 +40,7 @@ Then install neccesary packages to run the scripts
 collected 2 items                                                              
 
 tests.py ..                                                              [100%]
-============================== 2 passed in 0.19s ===============================
+============= 2 passed in 0.19s =============
 
 ## Example use:
 (VIRTUALENVNAME) truman@laptop ~/bookscraper-main ~ $ python bookscraper.py
