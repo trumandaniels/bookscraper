@@ -1,7 +1,7 @@
 # Bookscraper
 ## a web scraper / web crawler for books.toscrape.com
 
-This program takes online book data on books.toscrape.com and stores it in a local SQLite database. Developed with Linux Mint and Python 3.8.
+This program takes online book data on books.toscrape.com and stores it in a local SQLite database. Developed with Linux Mint and Python 3.8. I've written a full write up on my website at https://trumandaniels.com/2022/04/15/building-a-webscraper-with-beautifulsoup/
 
 ## Quick file rundown:
 - bookscraper.py ~ where all the magic happens: this file contains all the scraping logic and function documentation 
