@@ -50,8 +50,10 @@ def scrape_single_book_page(url):
          'title': 'A Light in the Attic', 
          'price': 51.77, 
          'stock_status': 'In stock (22 available)',
+         'star_rating': 'Three',
          'date_scraped': '04/14/22'}
     """
+
     page = requests.get(url)
     if page.status_code == 200: #200 means everything went okay!
         pass
@@ -62,6 +64,15 @@ def scrape_single_book_page(url):
         title = book_tree.find("h1").contents[0]
         price = book_tree.find(class_="price_color").contents[0].replace("Â", "")
         stock_status = book_tree.find(class_="instock availability").contents[2].replace("\n", "").lstrip().rstrip()
+        
+        #checking each possible star rating (1-5)
+        for num_stars in ["One","Two", "Three", "Four", "Five"]:        
+            try:
+                star_rating = book_tree.find(class_="star-rating " + num_stars).contents
+                star_rating = num_stars
+                break #stop looping if find the correct num stars
+            except AttributeError: #if it throws an error that means it is not this star rating
+                continue
     for tag in soup.find_all("meta"):
         if tag.get("name") == "description":
             description = tag.get("content")
@@ -70,6 +81,7 @@ def scrape_single_book_page(url):
             "title": title,
             "price": monetary(price),
             "stock_status": stock_status,
+            "star_rating": star_rating,
             "date_scraped": datetime.now().strftime("%m/%d/%y")
            }
 
@@ -145,6 +157,7 @@ def if_no_table_create_one(db_path, verbose=True):
             Title TEXT NOT NULL,
             Price£ FLOAT NOT NULL,
             Stock_Status TEXT NOT NULL,
+            Star_Rating TEXT NOT NULL,
             Date_Scraped TEXT NOT NULL
             );
             """
@@ -175,7 +188,7 @@ def add_book_to_database(db_path, input_dict, verbose=True):
 
     Inputs:
         db_path - a string of the path to the database
-        input_dict - a python dictionary containing the keys 'url', 'title', 'price', 'stock_status', and 'date_scraped'
+        input_dict - a python dictionary containing the keys 'url', 'title', 'price', 'stock_status', 'star_rating', and 'date_scraped'
         verbose - a bool (default=True) describing if the function should print info
     
     Output:
@@ -189,10 +202,10 @@ def add_book_to_database(db_path, input_dict, verbose=True):
 
     if_no_table_create_one(db_path, verbose=False)
     conn = sqlite3.connect(db_path)
-    sql = ''' INSERT INTO Books(URL,Title,Price£,Stock_Status, Date_Scraped)
-              VALUES(?,?,?,?,?) '''
+    sql = ''' INSERT INTO Books(URL,Title,Price£,Stock_Status,Star_Rating,Date_Scraped)
+              VALUES(?,?,?,?,?,?) '''
     cur = conn.cursor()
-    data_tuple = (input_dict["url"], input_dict["title"], input_dict["price"], input_dict["stock_status"], input_dict["date_scraped"])
+    data_tuple = (input_dict["url"], input_dict["title"], input_dict["price"], input_dict["stock_status"], input_dict["star_rating"], input_dict["date_scraped"])
     cur.execute(sql, data_tuple)
     conn.commit()
     if verbose==True:
@@ -225,13 +238,14 @@ def main(db_path, seconds_to_wait_between_scrapes=5, page_start=1, page_end=50, 
         >>> main(r"/home/truman/Documents/BookScraper/books.db")
         Done scraping
 
-    """
 
+    """
     for pg in range(page_start, page_end): #go through each browsing page
         url_list = get_book_urls_from_page(page=pg) #create a list of book URLs on that page
         for url in url_list:
             add_book_to_database(db_path=db_path, input_dict=scrape_single_book_page(url), verbose=verbose) #scrape each url
             time.sleep(seconds_to_wait_between_scrapes) #wait a little
+
 
     print("Done scraping")
     return None
